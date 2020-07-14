@@ -16,12 +16,34 @@
  */
 package game;
 
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.Dimension;
+import javax.swing.JFrame;
+
 /**
  *
  * @author Kurochkin Konstantin <geometr.sinc@gmail.com>
  */
-public class Client {
-    public static void main(String[] args) {
+public class Client extends Canvas {
+    
+    public Client(){
         
+    }
+    public static void main(String[] args) {
+        Client client = new Client();
+        client.setMaximumSize(new Dimension(800,600));
+        client.setMinimumSize(new Dimension(800,600));
+        client.setPreferredSize(new Dimension(800,600));
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        frame.setTitle("Snake");
+        frame.setSize(800, 600);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+        frame.setLayout(new BorderLayout());
+        frame.add(client, BorderLayout.CENTER);
+        frame.pack();
     }
 }

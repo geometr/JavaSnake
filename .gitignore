@@ -28,5 +28,5 @@ hs_err_pid*
 build.xml
 build/
 dist/
-mainfest.mf
+manifest.mf
 nbproject/

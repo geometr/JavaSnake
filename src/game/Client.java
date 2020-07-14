@@ -19,6 +19,8 @@ package game;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import javax.swing.JFrame;
 
 /**
@@ -26,20 +28,45 @@ import javax.swing.JFrame;
  * @author Kurochkin Konstantin <geometr.sinc@gmail.com>
  */
 public class Client extends Canvas {
-    
-    public Client(){
-        
+
+    private static final int CLIENT_WIDTH = 320;
+    private static final int CLIENT_HEIGHT = 200;
+    private static final int CLIENT_SCALE = 7;
+
+    private static int CLScale = CLIENT_SCALE;
+    private static int CLWidth = CLIENT_WIDTH * CLIENT_SCALE;
+    private static int CLHeight = CLIENT_HEIGHT * CLIENT_SCALE;
+
+    private static void setupClientWindowHeightAndWidth() {
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        int GDWidth = gd.getDisplayMode().getWidth();
+        int GDHeight = gd.getDisplayMode().getHeight();
+        while ((CLWidth > GDWidth) && ((CLHeight > GDHeight))) {
+            CLScale--;
+            CLWidth = CLIENT_WIDTH * CLScale;
+            CLHeight = CLIENT_HEIGHT * CLScale;
+        }
     }
+
+    private Client() {
+
+    }
+
     public static void main(String[] args) {
         Client client = new Client();
-        client.setMaximumSize(new Dimension(800,600));
-        client.setMinimumSize(new Dimension(800,600));
-        client.setPreferredSize(new Dimension(800,600));
+
+        setupClientWindowHeightAndWidth();
+
+        Dimension clientDimension = new Dimension(CLWidth, CLHeight);
+
+        client.setMaximumSize(clientDimension);
+        client.setMinimumSize(clientDimension);
+        client.setPreferredSize(clientDimension);
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setTitle("Snake");
-        frame.setSize(800, 600);
+        frame.setSize(CLWidth, CLHeight);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());

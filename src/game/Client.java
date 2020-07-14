@@ -19,23 +19,29 @@ package game;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.image.BufferStrategy;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
  *
  * @author Kurochkin Konstantin <geometr.sinc@gmail.com>
  */
-public class Client extends Canvas {
+public class Client extends Canvas implements Runnable {
 
     private static final int CLIENT_WIDTH = 320;
     private static final int CLIENT_HEIGHT = 200;
-    private static final int CLIENT_SCALE = 7;
+    private static final int CLIENT_SCALE = 2;
+    private static final boolean DEBUG = true;
 
     private static int CLScale = CLIENT_SCALE;
     private static int CLWidth = CLIENT_WIDTH * CLIENT_SCALE;
     private static int CLHeight = CLIENT_HEIGHT * CLIENT_SCALE;
+    private BufferStrategy bs;
 
     private static void setupClientWindowHeightAndWidth() {
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -53,6 +59,7 @@ public class Client extends Canvas {
     }
 
     public static void main(String[] args) {
+
         Client client = new Client();
 
         setupClientWindowHeightAndWidth();
@@ -72,5 +79,28 @@ public class Client extends Canvas {
         frame.setLayout(new BorderLayout());
         frame.add(client, BorderLayout.CENTER);
         frame.pack();
+        client.start();
     }
+
+    @Override
+    public void run() {
+
+        while (true) {
+            Graphics g = bs.getDrawGraphics();
+            // render code here
+            bs.show();
+            g.dispose();
+        }
+    }
+
+    private void start() {
+        bs = getBufferStrategy();
+        while (null == bs) {
+            createBufferStrategy(3);
+            requestFocus();
+            bs = getBufferStrategy();
+        }
+        new Thread(this).start();
+    }
+
 }

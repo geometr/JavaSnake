@@ -25,6 +25,7 @@ import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferStrategy;
+import java.util.Random;
 import javax.swing.JFrame;
 
 /**
@@ -43,6 +44,13 @@ public class Client extends Canvas implements Runnable {
     private static int CLHeight = CLIENT_HEIGHT * CLIENT_SCALE;
     private BufferStrategy bs;
 
+    private final int[] snakeBodyX = new int[100];
+    private final int[] snakeBodyY = new int[100];
+    private final int snakeLen = 32;
+    private final int appleX;
+    private final int appleY;
+    private final Random rand = new Random();
+
     private static void setupClientWindowHeightAndWidth() {
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int GDWidth = gd.getDisplayMode().getWidth();
@@ -55,7 +63,14 @@ public class Client extends Canvas implements Runnable {
     }
 
     private Client() {
-
+        int i = 0;
+        while (i < snakeLen) {
+            snakeBodyX[i] = i * 10;
+            snakeBodyY[i] = 20;
+            i++;
+        }
+        appleX = rand.nextInt(32) * 10;
+        appleY = rand.nextInt(32) * 10;
     }
 
     public static void main(String[] args) {
@@ -90,7 +105,7 @@ public class Client extends Canvas implements Runnable {
         int FPS = 0;
         int EPS = 0;
         int eticks = 0;
-        
+
         while (true) {
             long current = System.currentTimeMillis();
             long elapsed = current - previous;
@@ -109,7 +124,7 @@ public class Client extends Canvas implements Runnable {
                 eticks = 0;
             }
             ticks++;
-            render(FPS,EPS);
+            render(FPS, EPS);
         }
     }
 
@@ -127,10 +142,26 @@ public class Client extends Canvas implements Runnable {
         Graphics g = bs.getDrawGraphics();
         g.setColor(new Color(0, 0, 0, 255));
         g.fillRect(0, 0, CLWidth, CLHeight);
-        Font font = new Font("TimesRoman", Font.PLAIN, 11*CLScale);
+        Font font = new Font("TimesRoman", Font.PLAIN, 11 * CLScale);
         g.setColor(new Color(255, 255, 255, 255));
         g.setFont(font);
-        g.drawString("FPS " + FPS+" EPS " + EPS, 11*CLScale, 11*CLScale);
+        g.drawString("FPS " + FPS + " EPS " + EPS, 11 * CLScale, 11 * CLScale);
+        int i = 0;
+        while (i < snakeLen) {
+            if (snakeLen - 1 == i) {
+                g.setColor(new Color(255, 0, 0, 255));
+
+            } else {
+                g.setColor(new Color(0, 255, 0, 255));
+            }
+            g.drawString("@", this.snakeBodyX[i] * CLScale,
+                    snakeBodyY[i] * CLScale);
+
+            i++;
+
+        }
+        g.setColor(new Color(0, 0, 255, 255));
+        g.drawString("@", this.appleX * CLScale, this.appleY * CLScale);
         bs.show();
         g.dispose();
     }

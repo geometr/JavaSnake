@@ -29,7 +29,6 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import javax.swing.JFrame;
 
 /**
@@ -41,8 +40,8 @@ public class Client extends Canvas implements Runnable, KeyListener {
     private static final int CLIENT_WIDTH = 320;
     private static final int CLIENT_HEIGHT = 200;
     private static final int CLIENT_SCALE = 5;
-    private static final int TARGET_FPS = 100;
-
+    private static final int TARGET_FPS = 100;  
+    
     private static int CLScale = CLIENT_SCALE;
     private static int CLWidth = CLIENT_WIDTH * CLIENT_SCALE;
     private static int CLHeight = CLIENT_HEIGHT * CLIENT_SCALE;
@@ -50,10 +49,12 @@ public class Client extends Canvas implements Runnable, KeyListener {
 
     private final int[] snakeBodyX = new int[100];
     private final int[] snakeBodyY = new int[100];
-    private final int snakeLen = 32;
-    private final int appleX;
-    private final int appleY;
-    private final Random rand = new Random();
+    private final int snakeLen = 12;
+    private final int snakeMaxSpeed = 200;
+    private int snakeTicks=0;
+    private int snakeCurSpeed = 0;
+    private Apple apple;
+  
 
     private Key up = new Key();
     private Key down = new Key();
@@ -74,18 +75,15 @@ public class Client extends Canvas implements Runnable, KeyListener {
     }
 
     private Client() {
+        apple = new Apple();
         int i = 0;
         while (i < snakeLen) {
             snakeBodyX[i] = i * 10;
             snakeBodyY[i] = 20;
             i++;
         }
-        appleX = rand.nextInt(32) * 10;
-        appleY = rand.nextInt(32) * 10;
-        keys.add(up);
-        keys.add(down);
-        keys.add(left);
-        keys.add(right);
+        this.addKeyListener(this);
+        
 
     }
 
@@ -131,7 +129,7 @@ public class Client extends Canvas implements Runnable, KeyListener {
             processInput();
             while (lag >= millisPerUpdate) {
                 lag -= millisPerUpdate;
-                update();
+                update(eticks);
                 eticks++;
             }
             if (current - second >= 1000) {
@@ -179,25 +177,67 @@ public class Client extends Canvas implements Runnable, KeyListener {
 
         }
         g.setColor(new Color(0, 0, 255, 255));
-        g.drawString("@", this.appleX * CLScale, this.appleY * CLScale);
+        g.drawString("@", apple.x * CLScale, apple.y * CLScale);
         bs.show();
         g.dispose();
     }
 
-    private void update() {
+    private void update(int ticks) {
+        if (0==ticks) snakeCurSpeed = 0;
+        if (((up.down)||(down.down)||(left.down)||(right.down))&&(snakeTicks<ticks)){
+           snakeCurSpeed++;
+           snakeTicks = ticks;
+           
+           if (snakeCurSpeed > snakeMaxSpeed){
+               return;
+           } 
+        }
+        if (up.down) {
+            if (snakeBodyY[snakeLen - 1] > 0) {
+                for (int i = 0; i < snakeLen - 1; i++) {
+                    snakeBodyX[i] = snakeBodyX[i + 1];
+                    snakeBodyY[i] = snakeBodyY[i + 1];
+                }
+                snakeBodyY[snakeLen - 1] -= 10;
+            }
+        }
+        if (down.down) {
+            for (int i = 0; i < snakeLen - 1; i++) {
+                snakeBodyX[i] = snakeBodyX[i + 1];
+                snakeBodyY[i] = snakeBodyY[i + 1];
+            }
+            snakeBodyY[snakeLen - 1] += 10;
+        }
+        if (left.down) {
+            for (int i = 0; i < snakeLen - 1; i++) {
+                snakeBodyX[i] = snakeBodyX[i + 1];
+                snakeBodyY[i] = snakeBodyY[i + 1];
+            }
+            snakeBodyX[snakeLen - 1] -= 10;
+        }
+        if (right.down) {
+            for (int i = 0; i < snakeLen - 1; i++) {
+                snakeBodyX[i] = snakeBodyX[i + 1];
+                snakeBodyY[i] = snakeBodyY[i + 1];
+            }
+            snakeBodyX[snakeLen - 1] += 10;
+        }
+
         
     }
 
     public void releaseAll() {
-        for (int i = 0; i < keys.size(); i++) {
-            keys.get(i).down = false;
-        }
+        up.down = false;
+        down.down = false;
+        left.down = false;
+        right.down = false;
     }
 
     private void processInput() {
-        for (int i = 0; i < keys.size(); i++) {
-            keys.get(i).tick();
-        }
+        up.tick();
+        down.tick();
+        left.tick();
+        right.tick();
     }
 
     @Override

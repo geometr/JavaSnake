@@ -24,7 +24,11 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import javax.swing.JFrame;
 
@@ -32,7 +36,7 @@ import javax.swing.JFrame;
  *
  * @author Kurochkin Konstantin <geometr.sinc@gmail.com>
  */
-public class Client extends Canvas implements Runnable {
+public class Client extends Canvas implements Runnable, KeyListener {
 
     private static final int CLIENT_WIDTH = 320;
     private static final int CLIENT_HEIGHT = 200;
@@ -50,6 +54,13 @@ public class Client extends Canvas implements Runnable {
     private final int appleX;
     private final int appleY;
     private final Random rand = new Random();
+
+    private Key up = new Key();
+    private Key down = new Key();
+    private Key left = new Key();
+    private Key right = new Key();
+
+    public List<Key> keys = new ArrayList<>();
 
     private static void setupClientWindowHeightAndWidth() {
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
@@ -71,6 +82,11 @@ public class Client extends Canvas implements Runnable {
         }
         appleX = rand.nextInt(32) * 10;
         appleY = rand.nextInt(32) * 10;
+        keys.add(up);
+        keys.add(down);
+        keys.add(left);
+        keys.add(right);
+
     }
 
     public static void main(String[] args) {
@@ -85,7 +101,7 @@ public class Client extends Canvas implements Runnable {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        frame.setTitle("Snake");
+        frame.setTitle("Java Snake No libgdx sample");
         frame.setSize(CLWidth, CLHeight);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
@@ -111,6 +127,8 @@ public class Client extends Canvas implements Runnable {
             long elapsed = current - previous;
             previous = current;
             lag += elapsed;
+
+            processInput();
             while (lag >= millisPerUpdate) {
                 lag -= millisPerUpdate;
                 update();
@@ -167,5 +185,77 @@ public class Client extends Canvas implements Runnable {
     }
 
     private void update() {
+        
     }
+
+    public void releaseAll() {
+        for (int i = 0; i < keys.size(); i++) {
+            keys.get(i).down = false;
+        }
+    }
+
+    private void processInput() {
+        for (int i = 0; i < keys.size(); i++) {
+            keys.get(i).tick();
+        }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        toggle(e, true);
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        toggle(e, false);
+    }
+
+    private void toggle(KeyEvent ke, boolean pressed) {
+        if (ke.getKeyCode() == KeyEvent.VK_W) {
+            up.toggle(pressed);
+        }
+        if (ke.getKeyCode() == KeyEvent.VK_S) {
+            down.toggle(pressed);
+        }
+        if (ke.getKeyCode() == KeyEvent.VK_A) {
+            left.toggle(pressed);
+        }
+        if (ke.getKeyCode() == KeyEvent.VK_D) {
+            right.toggle(pressed);
+
+        }
+    }
+}
+
+class Key {
+
+    public int presses, absorbs;
+    public boolean down, clicked;
+
+    public void toggle(boolean pressed) {
+        if (pressed != down) {
+            down = pressed;
+        }
+        if (pressed) {
+            presses++;
+        }
+    }
+
+    public boolean press() {
+        return down;
+    }
+
+    public void tick() {
+        if (absorbs < presses) {
+            absorbs++;
+            clicked = true;
+        } else {
+            clicked = false;
+        }
+    }
+
 }

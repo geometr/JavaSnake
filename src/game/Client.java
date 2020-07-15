@@ -24,8 +24,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +33,7 @@ import javax.swing.JFrame;
  *
  * @author Kurochkin Konstantin <geometr.sinc@gmail.com>
  */
-public class Client extends Canvas implements Runnable, KeyListener {
+public class Client extends Canvas implements Runnable {
 
     private static final int CLIENT_WIDTH = 320;
     private static final int CLIENT_HEIGHT = 200;
@@ -47,14 +45,8 @@ public class Client extends Canvas implements Runnable, KeyListener {
     private static int CLHeight = CLIENT_HEIGHT * CLIENT_SCALE;
     private BufferStrategy bs;
     
-    private Snake snake;
-    private Apple apple;
-  
-
-    private Key up = new Key();
-    private Key down = new Key();
-    private Key left = new Key();
-    private Key right = new Key();
+    private final Snake snake;
+    private final Apple apple;
 
     public List<Key> keys = new ArrayList<>();
 
@@ -70,11 +62,8 @@ public class Client extends Canvas implements Runnable, KeyListener {
     }
 
     private Client() {
-        snake = new Snake();
+        snake = new Snake(new KeysInput(this));
         apple = new Apple();
-        this.addKeyListener(this);
-        
-
     }
 
     public static void main(String[] args) {
@@ -163,119 +152,13 @@ public class Client extends Canvas implements Runnable, KeyListener {
     }
 
     private void update(int ticks) {
-        if (0==ticks) snake.currentSpeed = 0;
-        if (((up.down)||(down.down)||(left.down)||(right.down))&&(snake.ticks<ticks)){
-           snake.currentSpeed++;
-           snake.ticks = ticks;
-           
-           if (snake.currentSpeed > snake.maxSpeed){
-               return;
-           } 
-        }
-        if (up.down) {
-            if (snake.bodyY[snake.len - 1] > 0) {
-                for (int i = 0; i < snake.len - 1; i++) {
-                    snake.bodyX[i] = snake.bodyX[i + 1];
-                    snake.bodyY[i] = snake.bodyY[i + 1];
-                }
-                snake.bodyY[snake.len - 1] -= 10;
-            }
-        }
-        if (down.down) {
-            for (int i = 0; i < snake.len - 1; i++) {
-                snake.bodyX[i] = snake.bodyX[i + 1];
-                snake.bodyY[i] = snake.bodyY[i + 1];
-            }
-            snake.bodyY[snake.len - 1] += 10;
-        }
-        if (left.down) {
-            for (int i = 0; i < snake.len - 1; i++) {
-                snake.bodyX[i] = snake.bodyX[i + 1];
-                snake.bodyY[i] = snake.bodyY[i + 1];
-            }
-            snake.bodyX[snake.len - 1] -= 10;
-        }
-        if (right.down) {
-            for (int i = 0; i < snake.len - 1; i++) {
-                snake.bodyX[i] = snake.bodyX[i + 1];
-                snake.bodyY[i] = snake.bodyY[i + 1];
-            }
-            snake.bodyX[snake.len - 1] += 10;
-        }
-
-        
-    }
-
-    public void releaseAll() {
-        up.down = false;
-        down.down = false;
-        left.down = false;
-        right.down = false;
+        snake.tick(ticks);
     }
 
     private void processInput() {
-        up.tick();
-        down.tick();
-        left.tick();
-        right.tick();
+        snake.input.down.tick();
+        snake.input.up.tick();
+        snake.input.left.tick();
+        snake.input.right.tick();
     }
-
-    @Override
-    public void keyTyped(KeyEvent e) {
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        toggle(e, true);
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        toggle(e, false);
-    }
-
-    private void toggle(KeyEvent ke, boolean pressed) {
-        if (ke.getKeyCode() == KeyEvent.VK_W) {
-            up.toggle(pressed);
-        }
-        if (ke.getKeyCode() == KeyEvent.VK_S) {
-            down.toggle(pressed);
-        }
-        if (ke.getKeyCode() == KeyEvent.VK_A) {
-            left.toggle(pressed);
-        }
-        if (ke.getKeyCode() == KeyEvent.VK_D) {
-            right.toggle(pressed);
-
-        }
-    }
-}
-
-class Key {
-
-    public int presses, absorbs;
-    public boolean down, clicked;
-
-    public void toggle(boolean pressed) {
-        if (pressed != down) {
-            down = pressed;
-        }
-        if (pressed) {
-            presses++;
-        }
-    }
-
-    public boolean press() {
-        return down;
-    }
-
-    public void tick() {
-        if (absorbs < presses) {
-            absorbs++;
-            clicked = true;
-        } else {
-            clicked = false;
-        }
-    }
-
 }

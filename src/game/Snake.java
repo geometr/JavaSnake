@@ -18,6 +18,7 @@ package game;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyListener;
 
 /**
  *
@@ -31,8 +32,10 @@ public class Snake {
     public final int maxSpeed = 200;
     public int ticks = 0;
     public int currentSpeed = 0;
+    public KeysInput input;
 
-    public Snake() {
+    public Snake(KeysInput keysInput) {
+        input = keysInput;
         int i = 0;
         while (i < len) {
             bodyX[i] = i * 10;
@@ -55,4 +58,50 @@ public class Snake {
             i++;
         }
     }
+
+    public void tick(int tick) {
+        if (0 == tick) {
+            currentSpeed = 0;
+        }
+        
+        if (((input.up.down) || (input.down.down) || (input.left.down) || (input.right.down)) && (ticks < tick)) {
+            currentSpeed++;
+            ticks = tick;
+
+            if (currentSpeed > maxSpeed) {
+                return;
+            }
+        }
+        if (input.up.down) {
+            if (bodyY[len - 1] > 0) {
+                for (int i = 0; i < len - 1; i++) {
+                    bodyX[i] = bodyX[i + 1];
+                    bodyY[i] = bodyY[i + 1];
+                }
+                bodyY[len - 1] -= 10;
+            }
+        }
+        if (input.down.down) {
+            for (int i = 0; i < len - 1; i++) {
+                bodyX[i] = bodyX[i + 1];
+                bodyY[i] = bodyY[i + 1];
+            }
+            bodyY[len - 1] += 10;
+        }
+        if (input.left.down) {
+            for (int i = 0; i < len - 1; i++) {
+                bodyX[i] = bodyX[i + 1];
+                bodyY[i] = bodyY[i + 1];
+            }
+            bodyX[len - 1] -= 10;
+        }
+        if (input.right.down) {
+            for (int i = 0; i < len - 1; i++) {
+                bodyX[i] = bodyX[i + 1];
+                bodyY[i] = bodyY[i + 1];
+            }
+            bodyX[len - 1] += 10;
+        }
+    }
+;
 }

@@ -18,13 +18,13 @@ package game;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferStrategy;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -35,8 +35,8 @@ public class Client extends Canvas implements Runnable {
 
     private static final int CLIENT_WIDTH = 320;
     private static final int CLIENT_HEIGHT = 200;
-    private static final int CLIENT_SCALE = 2;
-    private static final boolean DEBUG = true;
+    private static final int CLIENT_SCALE = 5;
+    private static final int TARGET_FPS = 100;
 
     private static int CLScale = CLIENT_SCALE;
     private static int CLWidth = CLIENT_WIDTH * CLIENT_SCALE;
@@ -61,9 +61,7 @@ public class Client extends Canvas implements Runnable {
     public static void main(String[] args) {
 
         Client client = new Client();
-
         setupClientWindowHeightAndWidth();
-
         Dimension clientDimension = new Dimension(CLWidth, CLHeight);
 
         client.setMaximumSize(clientDimension);
@@ -84,12 +82,34 @@ public class Client extends Canvas implements Runnable {
 
     @Override
     public void run() {
-
+        long previous = System.currentTimeMillis();
+        long second = System.currentTimeMillis();
+        long lag = 0;
+        long millisPerUpdate = 1000 / TARGET_FPS;
+        int ticks = 0;
+        int FPS = 0;
+        int EPS = 0;
+        int eticks = 0;
+        
         while (true) {
-            Graphics g = bs.getDrawGraphics();
-            // render code here
-            bs.show();
-            g.dispose();
+            long current = System.currentTimeMillis();
+            long elapsed = current - previous;
+            previous = current;
+            lag += elapsed;
+            while (lag >= millisPerUpdate) {
+                lag -= millisPerUpdate;
+                update();
+                eticks++;
+            }
+            if (current - second >= 1000) {
+                FPS = ticks;
+                EPS = eticks;
+                ticks = 0;
+                second = current;
+                eticks = 0;
+            }
+            ticks++;
+            render(FPS,EPS);
         }
     }
 
@@ -103,4 +123,18 @@ public class Client extends Canvas implements Runnable {
         new Thread(this).start();
     }
 
+    private void render(int FPS, int EPS) {
+        Graphics g = bs.getDrawGraphics();
+        g.setColor(new Color(0, 0, 0, 255));
+        g.fillRect(0, 0, CLWidth, CLHeight);
+        Font font = new Font("TimesRoman", Font.PLAIN, 11*CLScale);
+        g.setColor(new Color(255, 255, 255, 255));
+        g.setFont(font);
+        g.drawString("FPS " + FPS+" EPS " + EPS, 11*CLScale, 11*CLScale);
+        bs.show();
+        g.dispose();
+    }
+
+    private void update() {
+    }
 }

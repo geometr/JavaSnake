@@ -18,25 +18,41 @@ package game;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Random;
 
 /**
  *
  * @author Kurochkin Konstantin <geometr.sinc@gmail.com>
  */
-public class Apple {
+public class Snake {
 
-    public final int x;
-    public final int y;
-    private final Random rand = new Random();
+    public final int[] bodyX = new int[100];
+    public final int[] bodyY = new int[100];
+    final int len = 12;
+    public final int maxSpeed = 200;
+    public int ticks = 0;
+    public int currentSpeed = 0;
 
-    public Apple() {
-        x = rand.nextInt(32) * 10;
-        y = rand.nextInt(32) * 10;
+    public Snake() {
+        int i = 0;
+        while (i < len) {
+            bodyX[i] = i * 10;
+            bodyY[i] = 20;
+            i++;
+        }
     }
 
-    public void render(Graphics g,int scale) {
-        g.setColor(new Color(0, 0, 255, 255));
-        g.drawString("@", x*scale, y * scale);
+    public void render(Graphics g, int scale) {
+        int i = 0;
+        while (i < len) {
+            if (len - 1 == i) {
+                g.setColor(new Color(255, 0, 0, 255));
+
+            } else {
+                g.setColor(new Color(0, 255, 0, 255));
+            }
+            g.drawString("@", bodyX[i] * scale,
+                    bodyY[i] * scale);
+            i++;
+        }
     }
 }

@@ -46,13 +46,8 @@ public class Client extends Canvas implements Runnable, KeyListener {
     private static int CLWidth = CLIENT_WIDTH * CLIENT_SCALE;
     private static int CLHeight = CLIENT_HEIGHT * CLIENT_SCALE;
     private BufferStrategy bs;
-
-    private final int[] snakeBodyX = new int[100];
-    private final int[] snakeBodyY = new int[100];
-    private final int snakeLen = 12;
-    private final int snakeMaxSpeed = 200;
-    private int snakeTicks=0;
-    private int snakeCurSpeed = 0;
+    
+    private Snake snake;
     private Apple apple;
   
 
@@ -75,13 +70,8 @@ public class Client extends Canvas implements Runnable, KeyListener {
     }
 
     private Client() {
+        snake = new Snake();
         apple = new Apple();
-        int i = 0;
-        while (i < snakeLen) {
-            snakeBodyX[i] = i * 10;
-            snakeBodyY[i] = 20;
-            i++;
-        }
         this.addKeyListener(this);
         
 
@@ -156,71 +146,61 @@ public class Client extends Canvas implements Runnable, KeyListener {
 
     private void render(int FPS, int EPS) {
         Graphics g = bs.getDrawGraphics();
+        
         g.setColor(new Color(0, 0, 0, 255));
         g.fillRect(0, 0, CLWidth, CLHeight);
+        
         Font font = new Font("TimesRoman", Font.PLAIN, 11 * CLScale);
         g.setColor(new Color(255, 255, 255, 255));
         g.setFont(font);
         g.drawString("FPS " + FPS + " EPS " + EPS, 11 * CLScale, 11 * CLScale);
-        int i = 0;
-        while (i < snakeLen) {
-            if (snakeLen - 1 == i) {
-                g.setColor(new Color(255, 0, 0, 255));
-
-            } else {
-                g.setColor(new Color(0, 255, 0, 255));
-            }
-            g.drawString("@", this.snakeBodyX[i] * CLScale,
-                    snakeBodyY[i] * CLScale);
-
-            i++;
-
-        }
-        g.setColor(new Color(0, 0, 255, 255));
-        g.drawString("@", apple.x * CLScale, apple.y * CLScale);
+       
+        snake.render(g, CLScale);
+        apple.render(g, CLScale);
+        
         bs.show();
         g.dispose();
     }
 
     private void update(int ticks) {
-        if (0==ticks) snakeCurSpeed = 0;
-        if (((up.down)||(down.down)||(left.down)||(right.down))&&(snakeTicks<ticks)){
-           snakeCurSpeed++;
-           snakeTicks = ticks;
+        if (0==ticks) snake.currentSpeed = 0;
+        if (((up.down)||(down.down)||(left.down)||(right.down))&&(snake.ticks<ticks)){
+           snake.currentSpeed++;
+           snake.ticks = ticks;
            
-           if (snakeCurSpeed > snakeMaxSpeed){
+           if (snake.currentSpeed > snake.maxSpeed){
                return;
            } 
         }
         if (up.down) {
-            if (snakeBodyY[snakeLen - 1] > 0) {
-                for (int i = 0; i < snakeLen - 1; i++) {
-                    snakeBodyX[i] = snakeBodyX[i + 1];
-                    snakeBodyY[i] = snakeBodyY[i + 1];
+            if (snake.bodyY[snake.len - 1] > 0) {
+                for (int i = 0; i < snake.len - 1; i++) {
+                    snake.bodyX[i] = snake.bodyX[i + 1];
+                    snake.bodyY[i] = snake.bodyY[i + 1];
                 }
-                snakeBodyY[snakeLen - 1] -= 10;
+                snake.bodyY[snake.len - 1] -= 10;
             }
         }
         if (down.down) {
-            for (int i = 0; i < snakeLen - 1; i++) {
-                snakeBodyX[i] = snakeBodyX[i + 1];
-                snakeBodyY[i] = snakeBodyY[i + 1];
+            for (int i = 0; i < snake.len - 1; i++) {
+                snake.bodyX[i] = snake.bodyX[i + 1];
+                snake.bodyY[i] = snake.bodyY[i + 1];
             }
-            snakeBodyY[snakeLen - 1] += 10;
+            snake.bodyY[snake.len - 1] += 10;
         }
         if (left.down) {
-            for (int i = 0; i < snakeLen - 1; i++) {
-                snakeBodyX[i] = snakeBodyX[i + 1];
-                snakeBodyY[i] = snakeBodyY[i + 1];
+            for (int i = 0; i < snake.len - 1; i++) {
+                snake.bodyX[i] = snake.bodyX[i + 1];
+                snake.bodyY[i] = snake.bodyY[i + 1];
             }
-            snakeBodyX[snakeLen - 1] -= 10;
+            snake.bodyX[snake.len - 1] -= 10;
         }
         if (right.down) {
-            for (int i = 0; i < snakeLen - 1; i++) {
-                snakeBodyX[i] = snakeBodyX[i + 1];
-                snakeBodyY[i] = snakeBodyY[i + 1];
+            for (int i = 0; i < snake.len - 1; i++) {
+                snake.bodyX[i] = snake.bodyX[i + 1];
+                snake.bodyY[i] = snake.bodyY[i + 1];
             }
-            snakeBodyX[snakeLen - 1] += 10;
+            snake.bodyX[snake.len - 1] += 10;
         }
 
         

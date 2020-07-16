@@ -26,13 +26,25 @@ import java.util.Random;
  */
 public class Apple {
 
-    public final int x;
-    public final int y;
+    public int x;
+    public int y;
     private final Random rand = new Random();
 
     public Apple() {
         x = rand.nextInt(32) * 10;
-        y = rand.nextInt(32) * 10;
+        y = rand.nextInt(19) * 10+10;
+    }
+    public void generate() {
+        int newx = rand.nextInt(32) * 10;
+        int newy = rand.nextInt(19) * 10+10;
+        while (newx == x){
+             newx = rand.nextInt(32) * 10;
+        }    
+        while (newy == y){
+             newy = rand.nextInt(19) * 10+10;
+        }  
+        x= newx;
+        y= newy;
     }
 
     public void render(Graphics g,int scale) {

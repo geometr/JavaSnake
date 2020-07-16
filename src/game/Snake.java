@@ -26,82 +26,111 @@ import java.awt.event.KeyListener;
  */
 public class Snake {
 
-    public final int[] bodyX = new int[100];
-    public final int[] bodyY = new int[100];
-    final int len = 12;
-    public final int maxSpeed = 200;
+    public static final int MAX_SNAKE_LEN = 255;
+    public static final int START_SNAKE_LEN = 60;
+    public static final int HEAD = 0;
+    public static final Color RED = new Color(255, 0, 0, 255);
+    public static final Color GREEN = new Color(0, 255, 0, 255);
+    public final int[] bodyX = new int[MAX_SNAKE_LEN];
+    public final int[] bodyY = new int[MAX_SNAKE_LEN];
+    public int len = START_SNAKE_LEN;
+    public int ticksNeedToMove = 6;
     public int ticks = 0;
     public int currentSpeed = 0;
     public KeysInput input;
+    public int squareSize;
+    public int roomWidth;
+    public int roomHeight;
 
-    public Snake(KeysInput keysInput) {
+    public Snake(KeysInput keysInput, int sSize, int rWidth, int rHeight) {
+        roomWidth = rWidth;
+        roomHeight = rHeight;
+        squareSize = sSize;
         input = keysInput;
         int i = 0;
         while (i < len) {
-            bodyX[i] = i * 10;
-            bodyY[i] = 20;
+            bodyX[i] = i * squareSize;
+            bodyY[i] = 2 * squareSize;
             i++;
         }
     }
 
     public void render(Graphics g, int scale) {
-        int i = 0;
-        while (i < len) {
-            if (len - 1 == i) {
-                g.setColor(new Color(255, 0, 0, 255));
+        int i = len - 1;
+        while (i >= HEAD) {
+            if (HEAD == i) {
+                g.setColor(RED);
 
             } else {
-                g.setColor(new Color(0, 255, 0, 255));
+                g.setColor(GREEN);
             }
             g.drawString("@", bodyX[i] * scale,
                     bodyY[i] * scale);
-            i++;
+            i--;
         }
     }
 
     public void tick(int tick) {
-        if (0 == tick) {
-            currentSpeed = 0;
+        boolean move = false;
+        ticks++;
+        if (ticks > ticksNeedToMove) {
+            move = true;
+            ticks = 0;
         }
-        
-        if (((input.up.down) || (input.down.down) || (input.left.down) || (input.right.down)) && (ticks < tick)) {
-            currentSpeed++;
-            ticks = tick;
 
-            if (currentSpeed > maxSpeed) {
+        if (move) {
+            if (input.up.down) {
+                if (bodyY[HEAD] > squareSize) {
+                    moveBody();
+                    bodyY[HEAD] -= squareSize;
+                }
                 return;
             }
-        }
-        if (input.up.down) {
-            if (bodyY[len - 1] > 0) {
-                for (int i = 0; i < len - 1; i++) {
-                    bodyX[i] = bodyX[i + 1];
-                    bodyY[i] = bodyY[i + 1];
+            if (input.down.down) {
+                if (bodyY[HEAD] < roomHeight ) {
+                    moveBody();
+                    bodyY[HEAD] += squareSize;
                 }
-                bodyY[len - 1] -= 10;
+                return;
             }
-        }
-        if (input.down.down) {
-            for (int i = 0; i < len - 1; i++) {
-                bodyX[i] = bodyX[i + 1];
-                bodyY[i] = bodyY[i + 1];
+            if (input.left.down) {
+                if (bodyX[HEAD] > 0) {
+                    moveBody();
+                    bodyX[HEAD] -= squareSize;
+                }
+                return;
             }
-            bodyY[len - 1] += 10;
-        }
-        if (input.left.down) {
-            for (int i = 0; i < len - 1; i++) {
-                bodyX[i] = bodyX[i + 1];
-                bodyY[i] = bodyY[i + 1];
+            if (input.right.down) {
+                if (bodyX[HEAD] < roomWidth-squareSize) {
+                    moveBody();
+                    bodyX[HEAD] += squareSize;
+                }
             }
-            bodyX[len - 1] -= 10;
-        }
-        if (input.right.down) {
-            for (int i = 0; i < len - 1; i++) {
-                bodyX[i] = bodyX[i + 1];
-                bodyY[i] = bodyY[i + 1];
-            }
-            bodyX[len - 1] += 10;
         }
     }
-;
+
+    public void moveBody() {
+        for (int i = len - 1; i > HEAD; i--) {
+            if (bodyX[i] != bodyX[i - 1]) {
+                bodyX[i] = bodyX[i - 1];
+            }
+            if (bodyY[i] != bodyY[i - 1]) {
+                bodyY[i] = bodyY[i - 1];
+            }
+        }
+    }
+
+    public void grow() {
+        len++;
+        bodyX[len - 1] = bodyX[len - 2];
+        bodyY[len - 1] = bodyY[len - 2];
+    }
+
+    public boolean checkHeadCollision(int x, int y) {
+        boolean collision = false;
+        if ((bodyX[HEAD] == x) && (bodyY[HEAD] == y)) {
+            collision = true;
+        }
+        return collision;
+    }
 }

@@ -62,7 +62,7 @@ public class Client extends Canvas implements Runnable {
     }
 
     private Client() {
-        snake = new Snake(new KeysInput(this));
+        snake = new Snake(new KeysInput(this), 10, CLIENT_WIDTH, CLIENT_HEIGHT);
         apple = new Apple();
     }
 
@@ -146,18 +146,15 @@ public class Client extends Canvas implements Runnable {
         g.setColor(new Color(255, 255, 255, 255));
 
         g.drawString("FPS " + FPS + " EPS " + EPS + " SCORE " + snake.len, 10 * CLScale, 10 * CLScale);
-   
+
         bs.show();
         g.dispose();
     }
 
     private void update(int ticks) {
         snake.tick(ticks);
-        if ((snake.bodyX[0] == apple.x)
-                && (snake.bodyY[0] == apple.y)) {
-            snake.len++;
-            snake.bodyX[snake.len-1] = snake.bodyX[snake.len-2];
-            snake.bodyY[snake.len-1] = snake.bodyY[snake.len-2];
+        if (snake.checkHeadCollision(apple.x, apple.y)) {
+            snake.grow();
             apple.generate();
 
         }

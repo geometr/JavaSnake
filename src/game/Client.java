@@ -38,13 +38,13 @@ public class Client extends Canvas implements Runnable {
     private static final int CLIENT_WIDTH = 320;
     private static final int CLIENT_HEIGHT = 200;
     private static final int CLIENT_SCALE = 5;
-    private static final int TARGET_FPS = 100;  
-    
+    private static final int TARGET_FPS = 60;
+
     private static int CLScale = CLIENT_SCALE;
     private static int CLWidth = CLIENT_WIDTH * CLIENT_SCALE;
     private static int CLHeight = CLIENT_HEIGHT * CLIENT_SCALE;
     private BufferStrategy bs;
-    
+
     private final Snake snake;
     private final Apple apple;
 
@@ -78,7 +78,7 @@ public class Client extends Canvas implements Runnable {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        frame.setTitle("Java Snake No libgdx sample");
+        frame.setTitle("NO LGBT Edition. Only hardcore! Java Snake No libgdx sample");
         frame.setSize(CLWidth, CLHeight);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
@@ -135,24 +135,32 @@ public class Client extends Canvas implements Runnable {
 
     private void render(int FPS, int EPS) {
         Graphics g = bs.getDrawGraphics();
-        
+
         g.setColor(new Color(0, 0, 0, 255));
         g.fillRect(0, 0, CLWidth, CLHeight);
-        
-        Font font = new Font("TimesRoman", Font.PLAIN, 11 * CLScale);
-        g.setColor(new Color(255, 255, 255, 255));
+        Font font = new Font("TimesRoman", Font.PLAIN, 10 * CLScale);
         g.setFont(font);
-        g.drawString("FPS " + FPS + " EPS " + EPS, 11 * CLScale, 11 * CLScale);
-       
-        snake.render(g, CLScale);
         apple.render(g, CLScale);
-        
+        snake.render(g, CLScale);
+
+        g.setColor(new Color(255, 255, 255, 255));
+
+        g.drawString("FPS " + FPS + " EPS " + EPS + " SCORE " + snake.len, 10 * CLScale, 10 * CLScale);
+   
         bs.show();
         g.dispose();
     }
 
     private void update(int ticks) {
         snake.tick(ticks);
+        if ((snake.bodyX[0] == apple.x)
+                && (snake.bodyY[0] == apple.y)) {
+            snake.len++;
+            snake.bodyX[snake.len-1] = snake.bodyX[snake.len-2];
+            snake.bodyY[snake.len-1] = snake.bodyY[snake.len-2];
+            apple.generate();
+
+        }
     }
 
     private void processInput() {

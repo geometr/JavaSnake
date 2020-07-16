@@ -28,8 +28,8 @@ public class Snake {
 
     public final int[] bodyX = new int[100];
     public final int[] bodyY = new int[100];
-    final int len = 12;
-    public final int maxSpeed = 200;
+    public int len = 2;
+    public final int ticksNeedToMove = 6;
     public int ticks = 0;
     public int currentSpeed = 0;
     public KeysInput input;
@@ -47,7 +47,7 @@ public class Snake {
     public void render(Graphics g, int scale) {
         int i = 0;
         while (i < len) {
-            if (len - 1 == i) {
+            if (0 == i) {
                 g.setColor(new Color(255, 0, 0, 255));
 
             } else {
@@ -60,48 +60,54 @@ public class Snake {
     }
 
     public void tick(int tick) {
-        if (0 == tick) {
-            currentSpeed = 0;
+        boolean move = false;
+        ticks++;
+        if (ticks > ticksNeedToMove) {
+            move = true;
+            ticks = 0;
         }
-        
-        if (((input.up.down) || (input.down.down) || (input.left.down) || (input.right.down)) && (ticks < tick)) {
-            currentSpeed++;
-            ticks = tick;
 
-            if (currentSpeed > maxSpeed) {
+        if (move) {
+            if (input.up.down) {
+                if (bodyY[0] > 10) {
+
+                    moveBody();
+                    bodyY[0] -= 10;
+
+                }
                 return;
             }
-        }
-        if (input.up.down) {
-            if (bodyY[len - 1] > 0) {
-                for (int i = 0; i < len - 1; i++) {
-                    bodyX[i] = bodyX[i + 1];
-                    bodyY[i] = bodyY[i + 1];
+            if (input.down.down) {
+                if (bodyY[0] < 200) {
+                    moveBody();
+                    bodyY[0] += 10;
                 }
-                bodyY[len - 1] -= 10;
+                return;
             }
-        }
-        if (input.down.down) {
-            for (int i = 0; i < len - 1; i++) {
-                bodyX[i] = bodyX[i + 1];
-                bodyY[i] = bodyY[i + 1];
+            if (input.left.down) {
+                if (bodyX[0] > 0) {
+                    moveBody();
+                    bodyX[0] -= 10;
+                }
+                return;
             }
-            bodyY[len - 1] += 10;
-        }
-        if (input.left.down) {
-            for (int i = 0; i < len - 1; i++) {
-                bodyX[i] = bodyX[i + 1];
-                bodyY[i] = bodyY[i + 1];
+            if (input.right.down) {
+                if (bodyX[0] < 310) {
+                    moveBody();
+                    bodyX[0] += 10;
+                }
             }
-            bodyX[len - 1] -= 10;
-        }
-        if (input.right.down) {
-            for (int i = 0; i < len - 1; i++) {
-                bodyX[i] = bodyX[i + 1];
-                bodyY[i] = bodyY[i + 1];
-            }
-            bodyX[len - 1] += 10;
         }
     }
-;
+
+    public void moveBody() {
+        for (int i = len - 1; i > 0; i--) {
+            if (bodyX[i] != bodyX[i - 1]){
+            bodyX[i] = bodyX[i - 1];}
+            
+            if(bodyY[i] != bodyY[i - 1]){
+                bodyY[i] = bodyY[i - 1];
+            }
+        }
+    }
 }

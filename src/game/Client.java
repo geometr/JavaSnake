@@ -37,7 +37,7 @@ public class Client extends Canvas implements Runnable {
 
     private static final int CLIENT_WIDTH = 320;
     private static final int CLIENT_HEIGHT = 200;
-    private static final int CLIENT_SCALE = 5;
+    private static final int CLIENT_SCALE = 3;
     private static final int TARGET_FPS = 60;
 
     private static int CLScale = CLIENT_SCALE;
@@ -46,6 +46,7 @@ public class Client extends Canvas implements Runnable {
     private BufferStrategy bs;
 
     private final Snake snake;
+    private final Mouse mouse;
     private final Apple apple;
 
     public List<Key> keys = new ArrayList<>();
@@ -64,6 +65,8 @@ public class Client extends Canvas implements Runnable {
     private Client() {
         snake = new Snake(new KeysInput(this), 10, CLIENT_WIDTH, CLIENT_HEIGHT);
         apple = new Apple();
+        mouse = new Mouse(snake, apple);
+
     }
 
     public static void main(String[] args) {
@@ -78,7 +81,7 @@ public class Client extends Canvas implements Runnable {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        frame.setTitle("NO LGBT Edition. Only hardcore! Java Snake No libgdx sample");
+        frame.setTitle("Java Snake No libgdx sample");
         frame.setSize(CLWidth, CLHeight);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
@@ -120,6 +123,11 @@ public class Client extends Canvas implements Runnable {
             }
             ticks++;
             render(FPS, EPS);
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -141,6 +149,7 @@ public class Client extends Canvas implements Runnable {
         Font font = new Font("TimesRoman", Font.PLAIN, 10 * CLScale);
         g.setFont(font);
         apple.render(g, CLScale);
+        mouse.render(g, CLScale);
         snake.render(g, CLScale);
 
         g.setColor(new Color(255, 255, 255, 255));
@@ -153,11 +162,16 @@ public class Client extends Canvas implements Runnable {
 
     private void update(int ticks) {
         snake.tick(ticks);
-        if (snake.checkHeadCollision(apple.x, apple.y)) {
-            snake.grow();
-            apple.generate();
-
+        if (snake.checkHeadCollision(mouse.x, mouse.y)) {
+            snake.growAndEat();
+            mouse.generate();
         }
+        mouse.tick(ticks);
+        if (mouse.checkBodyCollision(apple.x, apple.y)) {
+            mouse.eat();
+            apple.generate();
+        }
+        apple.tick(ticks);
     }
 
     private void processInput() {

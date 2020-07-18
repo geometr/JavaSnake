@@ -16,7 +16,6 @@
  */
 package game;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Random;
 
@@ -24,32 +23,16 @@ import java.util.Random;
  *
  * @author Kurochkin Konstantin <geometr.sinc@gmail.com>
  */
-public class Apple extends Entity{
+abstract public class Entity {
 
+    public int x;
+    public int y;
+    public final Random rand = new Random();
+    
+    public void render(Graphics g, int scale){
+        
+    };
+    public void tick(int tick) {
 
-    public Apple() {
-        x = rand.nextInt(32) * 10;
-        y = rand.nextInt(19) * 10 + 10;
     }
-
-    public void generate() {
-        int newx = rand.nextInt(32) * 10;
-        int newy = rand.nextInt(19) * 10 + 10;
-
-        while (newx == x) {
-            newx = rand.nextInt(32) * 10;
-        }
-        while (newy == y) {
-            newy = rand.nextInt(19) * 10 + 10;
-        }
-        x = newx;
-        y = newy;
-    }
-
-    @Override
-    public void render(Graphics g, int scale) {
-        g.setColor(new Color(255, 255, 0, 255));
-        g.drawString("*", x * scale, y * scale);
-    }
-
 }

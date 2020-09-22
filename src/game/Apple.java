@@ -16,39 +16,41 @@
  */
 package game;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Random;
 
 /**
  *
  * @author Kurochkin Konstantin <geometr.sinc@gmail.com>
  */
-public class Apple {
+public class Apple extends Entity {
 
-    public int x;
-    public int y;
-    private final Random rand = new Random();
 
-    public Apple() {
-        x = rand.nextInt(32) * 10;
-        y = rand.nextInt(19) * 10+10;
+    public Apple(int sSize, int rWidth, int rHeight) {
+        squareSize = sSize;
+        roomWidth = rWidth;
+        roomHeight = rHeight;
+        x = rand.nextInt(roomWidth / squareSize) * squareSize;
+        y = rand.nextInt(roomHeight / squareSize - 1) * squareSize + squareSize;
     }
+
     public void generate() {
-        int newx = rand.nextInt(32) * 10;
-        int newy = rand.nextInt(19) * 10+10;
-        while (newx == x){
-             newx = rand.nextInt(32) * 10;
-        }    
-        while (newy == y){
-             newy = rand.nextInt(19) * 10+10;
-        }  
-        x= newx;
-        y= newy;
+        int newx = rand.nextInt(roomWidth / squareSize) * squareSize;
+        int newy = rand.nextInt(roomHeight / squareSize - 1) * squareSize + squareSize;
+
+        while (newx == x) {
+            newx = rand.nextInt(roomWidth / squareSize) * squareSize;
+        }
+        while (newy == y) {
+            newy = rand.nextInt(roomHeight / squareSize - 1) * squareSize + squareSize;
+        }
+        x = newx;
+        y = newy;
     }
 
-    public void render(Graphics g,int scale) {
-        g.setColor(new Color(0, 0, 255, 255));
-        g.drawString("@", x*scale, y * scale);
+    @Override
+    public void render(Graphics g, int scale) {
+        g.setColor(Colors.YELLOW);
+        g.drawString("*", x * scale, y * scale);
     }
+
 }

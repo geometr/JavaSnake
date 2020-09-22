@@ -16,42 +16,43 @@
  */
 package game;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.util.Random;
 
 /**
  *
  * @author Kurochkin Konstantin <geometr.sinc@gmail.com>
  */
-public class Mouse extends Entity{
+public class Mouse extends Entity {
 
-    private final Random rand = new Random();
-    public int ticks = 0;
-    public int ticksNeedToMove = 4;
-    public int stamina = 10;
     public Snake snake;
     public Apple apple;
-    public int ticksNeedToStarve = 60;
-    public int ticksStarve = 0;
 
-    public Mouse(Snake sn, Apple ap) {
+    public Mouse(Snake sn, Apple ap, int sSize, int rWidth, int rHeight) {
+        ticksStarve = 0;
+        ticksNeedToStarve = 60;
+        ticksNeedToMove = 4;
+        staminaMax = 10;
+        stamina = staminaMax;
+        staminaStep = 3;
+        squareSize = sSize;
+        roomWidth = rWidth;
+        roomHeight = rHeight;
         snake = sn;
         apple = ap;
-        x = rand.nextInt(32) * 10;
-        y = rand.nextInt(19) * 10 + 10;
+        x = rand.nextInt(roomWidth / squareSize) * squareSize;
+        y = rand.nextInt(roomHeight / squareSize) * squareSize + squareSize;
     }
 
     public void generate() {
         stamina = 10;
-        int newx = rand.nextInt(32) * 10;
-        int newy = rand.nextInt(19) * 10 + 10;
+        int newx = rand.nextInt(roomWidth / squareSize) * squareSize;
+        int newy = rand.nextInt(roomHeight / squareSize) * squareSize + squareSize;
 
         while ((newx == x) && (!snake.checkBodyCollision(newx, newy))) {
-            newx = rand.nextInt(32) * 10;
+            newx = rand.nextInt(roomWidth / squareSize) * squareSize;
         }
         while ((newy == y) && (!snake.checkBodyCollision(newx, newy))) {
-            newy = rand.nextInt(19) * 10 + 10;
+            newy = rand.nextInt(roomHeight / squareSize) * squareSize + squareSize;
         }
         x = newx;
         y = newy;
@@ -59,7 +60,7 @@ public class Mouse extends Entity{
 
     @Override
     public void render(Graphics g, int scale) {
-        g.setColor(new Color(0, 0, 255, 255));
+        g.setColor(Colors.BLUE);
         g.drawString("X", x * scale, y * scale);
     }
 
@@ -79,29 +80,29 @@ public class Mouse extends Entity{
             ticks = 0;
         }
         if (move && (stamina > 0)) {
-            int moveX =0;
-            int moveY =0;
+            int moveX = 0;
+            int moveY = 0;
             if (rand.nextInt(2) == 0) {
                 if (apple.x > x) {
-                    moveX = 1*10;
+                    moveX = 1 * squareSize;
                 }
                 if (apple.x < x) {
-                    moveX = -1*10;
+                    moveX = -1 * squareSize;
                 }
-                if ((x + moveX >= 0) && (x + moveX < 320)) {
+                if ((x + moveX >= 0) && (x + moveX < roomWidth)) {
                     if (!snake.checkBodyCollision(x + moveX, y)) {
                         x = x + moveX;
                     }
                 }
             } else {
                 if (apple.y > y) {
-                    moveY = 1*10;
+                    moveY = 1 * squareSize;
                 }
                 if (apple.y < y) {
-                    moveY = -1*10;
+                    moveY = -1 * squareSize;
                 }
 
-                if ((y + moveY > 0) && (y + moveY < 200)) {
+                if ((y + moveY > 0) && (y + moveY < roomHeight)) {
                     if (!snake.checkBodyCollision(x, y + moveY)) {
                         y = y + moveY;
                     }
@@ -111,17 +112,13 @@ public class Mouse extends Entity{
     }
 
     public boolean checkBodyCollision(int xTarget, int yTarget) {
-
-        if ((xTarget == x) && (yTarget == y)) {
-            return true;
-        }
-        return false;
+        return (xTarget == x) && (yTarget == y);
     }
 
     void eat() {
-        stamina += 3;
-        if (stamina > 10) {
-            stamina = 10;
+        stamina += staminaStep;
+        if (stamina > staminaMax) {
+            stamina = staminaMax;
         }
     }
 }

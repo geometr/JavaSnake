@@ -16,35 +16,16 @@
  */
 package game;
 
-import java.awt.Graphics;
-import java.util.Random;
+import java.awt.Color;
 
 /**
  *
  * @author Kurochkin Konstantin <geometr.sinc@gmail.com>
  */
-abstract public class Entity {
+public class Colors {
 
-    public int x;
-    public int y;
-    public int ticks = 0;
-    public int squareSize = 0;
-    public int roomWidth = 0;
-    public int roomHeight = 0;
-    public int ticksNeedToMove = 0;
-    public int ticksNeedToStarve = 0;
-    public int ticksStarve = 0;
-    public int stamina = 0;
-    public int staminaMax = 0;
-    public int staminaStep = 0;
-    public final Random rand = new Random();
-
-    public void render(Graphics g, int scale) {
-
-    }
-
-    ;
-    public void tick(int tick) {
-
-    }
+    public final static Color YELLOW = new Color(255, 255, 0, 255);
+    public final static Color BLUE = new Color(0, 0, 255, 255);
+    public static final Color RED = new Color(255, 0, 0, 255);
+    public static final Color GREEN = new Color(0, 255, 0, 255);
 }

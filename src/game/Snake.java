@@ -16,9 +16,7 @@
  */
 package game;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.KeyListener;
 
 /**
  *
@@ -29,8 +27,7 @@ public class Snake {
     public static final int MAX_SNAKE_LEN = 255;
     public static final int START_SNAKE_LEN = 6;
     public static final int HEAD = 0;
-    public static final Color RED = new Color(255, 0, 0, 255);
-    public static final Color GREEN = new Color(0, 255, 0, 255);
+   
     public final int[] bodyX = new int[MAX_SNAKE_LEN];
     public final int[] bodyY = new int[MAX_SNAKE_LEN];
     public int len = START_SNAKE_LEN;
@@ -43,17 +40,19 @@ public class Snake {
     public int squareSize;
     public int roomWidth;
     public int roomHeight;
-    public int stamina = 10;
+    public int staminaMax = 10;
+    public int stamina = staminaMax;
+    public int staminaStep = 3;
 
     public Snake(KeysInput keysInput, int sSize, int rWidth, int rHeight) {
         roomWidth = rWidth;
         roomHeight = rHeight;
         squareSize = sSize;
         input = keysInput;
-        int i = 0;
-        while (i < len) {
-            bodyX[i] = i * squareSize;
-            bodyY[i] = 2 * squareSize;
+        int i = 1;
+        while (i <= len) {
+            bodyX[len - i] = (i + roomHeight / squareSize / 2 ) * squareSize;
+            bodyY[len - i] = roomHeight / squareSize / 2 * squareSize;
             i++;
         }
     }
@@ -62,18 +61,18 @@ public class Snake {
         int i = len - 1;
         while (i >= HEAD) {
             if (HEAD == i) {
-                g.setColor(RED);
+                g.setColor(Colors.RED);
 
             } else {
-                g.setColor(GREEN);
+                g.setColor(Colors.GREEN);
             }
             g.drawString("@", bodyX[i] * scale,
                     bodyY[i] * scale);
             i--;
         }
         for (i = 0; i < stamina; i++) {
-            g.setColor(RED);
-            g.drawString("♥", i * squareSize * scale, 200 * scale);
+            g.setColor(Colors.RED);
+            g.drawString("♥", i * squareSize * scale, roomHeight * scale);
         }
 
     }
@@ -141,9 +140,9 @@ public class Snake {
 
     public void growAndEat() {
         len++;
-        stamina += 3;
-        if (stamina > 10) {
-            stamina = 10;
+        stamina += staminaStep;
+        if (stamina > staminaMax) {
+            stamina = staminaMax;
         }
         bodyX[len - 1] = bodyX[len - 2];
         bodyY[len - 1] = bodyY[len - 2];

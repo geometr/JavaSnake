@@ -37,14 +37,17 @@ public class Client extends Canvas implements Runnable {
 
     private static final int CLIENT_WIDTH = 320;
     private static final int CLIENT_HEIGHT = 200;
-    private static final int CLIENT_SCALE = 3;
+    private static final int CLIENT_SCALE = 1;
     private static final int TARGET_FPS = 60;
-
+    private static final int SQUARE_SIZE = 10;
+    private static final Color BLACK = new Color(0,0,0,255);
+    private static final Color WHITE = new Color(255,255,255,255);
+    
     private static int CLScale = CLIENT_SCALE;
     private static int CLWidth = CLIENT_WIDTH * CLIENT_SCALE;
     private static int CLHeight = CLIENT_HEIGHT * CLIENT_SCALE;
     private BufferStrategy bs;
-
+    
     private final Snake snake;
     private final Mouse mouse;
     private final Apple apple;
@@ -63,9 +66,9 @@ public class Client extends Canvas implements Runnable {
     }
 
     private Client() {
-        snake = new Snake(new KeysInput(this), 10, CLIENT_WIDTH, CLIENT_HEIGHT);
-        apple = new Apple();
-        mouse = new Mouse(snake, apple);
+        snake = new Snake(new KeysInput(this), SQUARE_SIZE, CLIENT_WIDTH, CLIENT_HEIGHT);
+        apple = new Apple(10, CLIENT_WIDTH, CLIENT_HEIGHT);
+        mouse = new Mouse(snake, apple, SQUARE_SIZE, CLIENT_WIDTH, CLIENT_HEIGHT);
 
     }
 
@@ -144,17 +147,17 @@ public class Client extends Canvas implements Runnable {
     private void render(int FPS, int EPS) {
         Graphics g = bs.getDrawGraphics();
 
-        g.setColor(new Color(0, 0, 0, 255));
+        g.setColor(BLACK);
         g.fillRect(0, 0, CLWidth, CLHeight);
-        Font font = new Font("TimesRoman", Font.PLAIN, 10 * CLScale);
+        Font font = new Font("TimesRoman", Font.PLAIN, SQUARE_SIZE * CLScale);
         g.setFont(font);
         apple.render(g, CLScale);
         mouse.render(g, CLScale);
         snake.render(g, CLScale);
 
-        g.setColor(new Color(255, 255, 255, 255));
+        g.setColor(WHITE);
 
-        g.drawString("FPS " + FPS + " EPS " + EPS + " SCORE " + snake.len, 10 * CLScale, 10 * CLScale);
+        g.drawString("FPS " + FPS + " EPS " + EPS + " SCORE " + snake.len, SQUARE_SIZE * CLScale, SQUARE_SIZE * CLScale);
 
         bs.show();
         g.dispose();

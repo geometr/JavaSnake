@@ -74,7 +74,6 @@ public class Snake {
             g.setColor(Colors.RED);
             g.drawString("♥", i * squareSize * scale, roomHeight * scale);
         }
-
     }
 
     public void tick(int tick) {

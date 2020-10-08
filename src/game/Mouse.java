@@ -27,7 +27,7 @@ public class Mouse extends Entity {
     public Snake snake;
     public Apple apple;
 
-    public Mouse(Snake sn, Apple ap, int sSize, int rWidth, int rHeight) {
+    public Mouse(int sSize, int rWidth, int rHeight) {
         ticksStarve = 0;
         ticksNeedToStarve = 60;
         ticksNeedToMove = 4;
@@ -37,12 +37,19 @@ public class Mouse extends Entity {
         squareSize = sSize;
         roomWidth = rWidth;
         roomHeight = rHeight;
-        snake = sn;
-        apple = ap;
         x = rand.nextInt(roomWidth / squareSize) * squareSize;
         y = rand.nextInt(roomHeight / squareSize) * squareSize + squareSize;
     }
 
+    public void addSnake(Snake sn) {
+        snake = sn;
+    }
+    
+    public void addApple(Apple ap) {
+        apple = ap;
+    }
+
+    
     public void generate() {
         stamina = 10;
         int newx = rand.nextInt(roomWidth / squareSize) * squareSize;

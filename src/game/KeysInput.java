@@ -29,6 +29,8 @@ public class KeysInput implements KeyListener {
     public Key down = new Key();
     public Key left = new Key();
     public Key right = new Key();
+    public Key escape = new Key();
+    public Key enter = new Key();
 
     KeysInput(Client client) {
         client.addKeyListener(this);
@@ -60,7 +62,12 @@ public class KeysInput implements KeyListener {
         }
         if (ke.getKeyCode() == KeyEvent.VK_D) {
             right.toggle(pressed);
-
+        }
+        if (ke.getKeyCode() == KeyEvent.VK_ESCAPE) {
+            escape.toggle(pressed);
+        }
+        if (ke.getKeyCode() == KeyEvent.VK_ENTER){
+            enter.toggle(pressed);
         }
     }
 
@@ -69,5 +76,7 @@ public class KeysInput implements KeyListener {
         down.down = false;
         left.down = false;
         right.down = false;
+        escape.down = false;
+        enter.down = false;
     }
 }

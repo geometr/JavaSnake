@@ -30,3 +30,5 @@ build/
 dist/
 manifest.mf
 nbproject/
+uml-diag.puml
+HallOfFame.txt

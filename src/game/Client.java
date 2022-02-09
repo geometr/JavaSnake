@@ -18,13 +18,17 @@ package game;
 
 import java.awt.BorderLayout;
 import java.awt.Canvas;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferStrategy;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
@@ -43,7 +47,7 @@ public class Client extends Canvas implements Runnable {
 
     // @TODO: Добавить Загрузку и сохранение
     private static enum GameStatus {
-        MAINMENU, PAUSED, GAMECYCLE, GAMEOVER
+        MAINMENU, PAUSED, GAMECYCLE, GAMEOVER, HALLFAME
     }
 
     private static enum MainMenu {
@@ -61,9 +65,11 @@ public class Client extends Canvas implements Runnable {
     private BufferStrategy bs;
     public KeysInput input;
 
-    private final Snake snake;
-    private final Mouse mouse;
-    private final Apple apple;
+    private Snake snake;
+    private Mouse mouse;
+    private Apple apple;
+
+    private Score[] halloffame = new Score[7];
 
     public List<Key> keys = new ArrayList<>();
 
@@ -79,13 +85,12 @@ public class Client extends Canvas implements Runnable {
     }
 
     private Client() {
+
         input = new KeysInput(this);
-        snake = new Snake(input, SQUARE_SIZE, CLIENT_WIDTH, CLIENT_HEIGHT);
-        apple = new Apple(10, CLIENT_WIDTH, CLIENT_HEIGHT);
-        mouse = new Mouse(SQUARE_SIZE, CLIENT_WIDTH, CLIENT_HEIGHT);
-        mouse.addApple(apple);
-        mouse.addSnake(snake);
+
+      
     }
+    // TODO Auto-generated catch block
 
     public static void main(String[] args) {
 
@@ -140,6 +145,11 @@ public class Client extends Canvas implements Runnable {
 
                 }
             }
+            if (gameStatus == GameStatus.HALLFAME) {
+                if (input.escape.clicked) {
+                    gameStatus = GameStatus.MAINMENU;
+                }
+            }
             if (gameStatus == GameStatus.MAINMENU) {
                 if (input.down.clicked) {
                     menuCursor++;
@@ -157,7 +167,25 @@ public class Client extends Canvas implements Runnable {
                 }
                 if (input.enter.clicked) {
                     if (menuCursor == 0) {
+                        if (null != snake) {
+                            snake = null;
+                        }
+                        if (null != apple) {
+                            apple = null;
+                        }
+                        if (null != mouse) {
+                            mouse = null;
+                        }
+                        snake = new Snake(input, SQUARE_SIZE, CLIENT_WIDTH, CLIENT_HEIGHT);
+                        apple = new Apple(10, CLIENT_WIDTH, CLIENT_HEIGHT);
+                        mouse = new Mouse(SQUARE_SIZE, CLIENT_WIDTH, CLIENT_HEIGHT);
+                        mouse.addApple(apple);
+                        mouse.addSnake(snake);
+
                         gameStatus = GameStatus.GAMECYCLE;
+                    }
+                    if (menuCursor == 3) {
+                        gameStatus = GameStatus.HALLFAME;
                     }
                     if (menuCursor == 4) {
                         break;
@@ -195,6 +223,27 @@ public class Client extends Canvas implements Runnable {
     }
 
     private void start() {
+          try {
+            halloffame[0] = new Score(100, "SINCLAIR");
+            halloffame[1] = new Score(90, "PETER");
+            halloffame[2] = new Score(80, "MARK");
+            halloffame[3] = new Score(70, "ANASTASIA");
+            halloffame[4] = new Score(60, "ALARA");
+            halloffame[5] = new Score(50, "DASHA");
+            halloffame[6] = new Score(40, "BENDER");
+
+            File file = new File("HallOfFame.txt");
+            FileOutputStream f = new FileOutputStream(file);
+            ObjectOutputStream o = new ObjectOutputStream(f);
+            o.writeObject(halloffame);
+            o.close();
+            f.close();
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found");
+        } catch (IOException e) {
+            System.out.println("Error initializing stream");
+        }
         bs = getBufferStrategy();
         while (null == bs) {
             createBufferStrategy(3);
@@ -220,6 +269,21 @@ public class Client extends Canvas implements Runnable {
                 g.drawString("SCORE: " + snake.len, SQUARE_SIZE * CLScale * 15, SQUARE_SIZE * CLScale * 1);
 
                 break;
+            case HALLFAME:
+                g.setColor(Colors.BLUE);
+                g.drawString("* HALL OF FAME *", SQUARE_SIZE * CLScale * 11, SQUARE_SIZE * CLScale * 3);
+                g.setColor(Colors.GREEN);
+                g.drawString("1. SINCLAIR.....100", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 5);
+                g.drawString("2. PETER.........90", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 7);
+                g.drawString("3. MARK..........80", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 9);
+                g.setColor(Colors.YELLOW);
+                g.drawString("4. ANASTASIA.....70", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 11);
+                g.drawString("5. ALARA.........60", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 13);
+                g.drawString("6. DASHA.........50", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 15);
+                g.setColor(Colors.RED);
+                g.drawString("7. VERONIKA......40", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 17);
+                break;
+
             case MAINMENU:
                 g.setColor(Colors.GREEN);
                 g.drawString("S N A K E", SQUARE_SIZE * CLScale * 11, SQUARE_SIZE * CLScale * 3);

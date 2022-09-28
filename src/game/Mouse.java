@@ -91,10 +91,10 @@ public class Mouse extends Entity {
             int moveY = 0;
             if (rand.nextInt(2) == 0) {
                 if (apple.x > x) {
-                    moveX = 1 * squareSize;
+                    moveX =  squareSize;
                 }
                 if (apple.x < x) {
-                    moveX = -1 * squareSize;
+                    moveX = -squareSize;
                 }
                 if ((x + moveX >= 0) && (x + moveX < roomWidth)) {
                     if (!snake.checkBodyCollision(x + moveX, y)) {
@@ -103,10 +103,10 @@ public class Mouse extends Entity {
                 }
             } else {
                 if (apple.y > y) {
-                    moveY = 1 * squareSize;
+                    moveY = squareSize;
                 }
                 if (apple.y < y) {
-                    moveY = -1 * squareSize;
+                    moveY = -squareSize;
                 }
 
                 if ((y + moveY > 0) && (y + moveY < roomHeight)) {

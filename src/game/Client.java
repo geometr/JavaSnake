@@ -44,24 +44,24 @@ public class Client extends Canvas implements Runnable {
     private static final int CLIENT_SCALE = 3;
     private static final int TARGET_FPS = 60;
     private static final int SQUARE_SIZE = 10;
-
+    private static final String WINDOW_TITLE = "Java Snake No libgdx sample";
     // @TODO: Добавить Загрузку и сохранение
-    private static enum GameStatus {
-        MAINMENU, PAUSED, GAMECYCLE, GAMEOVER, HALLFAME
+    private enum GameStatus {
+        MAINMENU, PAUSED, GAMECYCLE, GAMEOVER, HALL_OF_FAME
     }
 
-    private static enum MainMenu {
-        STARTGAME, LOADGAME, EXIT, OPTIONS, HALLFAME
+    private enum MainMenu {
+        STARTGAME, LOADGAME, EXIT, OPTIONS, HALL_OF_FAME
     }
     private int menuCursor = 0;
 
-    private static enum PauseMenu {
+    private enum PauseMenu {
         SAVEGAME, LOADGAME, CONTINUE, EXIT, OPTIONS
     }
     private GameStatus gameStatus = GameStatus.MAINMENU;
-    private static int CLScale = CLIENT_SCALE;
-    private static int CLWidth = CLIENT_WIDTH * CLIENT_SCALE;
-    private static int CLHeight = CLIENT_HEIGHT * CLIENT_SCALE;
+    private static int clientScale = CLIENT_SCALE;
+    private static int clientWidth = CLIENT_WIDTH * CLIENT_SCALE;
+    private static int clientHeight = CLIENT_HEIGHT * CLIENT_SCALE;
     private BufferStrategy bs;
     public KeysInput input;
 
@@ -69,7 +69,7 @@ public class Client extends Canvas implements Runnable {
     private Mouse mouse;
     private Apple apple;
 
-    private Score[] halloffame = new Score[7];
+    private Score[] hallOfFame = new Score[7];
 
     public List<Key> keys = new ArrayList<>();
 
@@ -77,18 +77,15 @@ public class Client extends Canvas implements Runnable {
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         int GDWidth = gd.getDisplayMode().getWidth();
         int GDHeight = gd.getDisplayMode().getHeight();
-        while ((CLWidth > GDWidth) && ((CLHeight > GDHeight))) {
-            CLScale--;
-            CLWidth = CLIENT_WIDTH * CLScale;
-            CLHeight = CLIENT_HEIGHT * CLScale;
+        while ((clientWidth > GDWidth) && ((clientHeight > GDHeight))) {
+            clientScale--;
+            clientWidth = CLIENT_WIDTH * clientScale;
+            clientHeight = CLIENT_HEIGHT * clientScale;
         }
     }
 
     private Client() {
-
         input = new KeysInput(this);
-
-      
     }
     // TODO Auto-generated catch block
 
@@ -96,7 +93,7 @@ public class Client extends Canvas implements Runnable {
 
         Client client = new Client();
         setupClientWindowHeightAndWidth();
-        Dimension clientDimension = new Dimension(CLWidth, CLHeight);
+        Dimension clientDimension = new Dimension(clientWidth, clientHeight);
 
         client.setMaximumSize(clientDimension);
         client.setMinimumSize(clientDimension);
@@ -104,8 +101,8 @@ public class Client extends Canvas implements Runnable {
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        frame.setTitle("Java Snake No libgdx sample");
-        frame.setSize(CLWidth, CLHeight);
+        frame.setTitle(WINDOW_TITLE);
+        frame.setSize(clientWidth, clientHeight);
         frame.setResizable(false);
         frame.setLocationRelativeTo(null);
         frame.setLayout(new BorderLayout());
@@ -145,7 +142,7 @@ public class Client extends Canvas implements Runnable {
 
                 }
             }
-            if (gameStatus == GameStatus.HALLFAME) {
+            if (gameStatus == GameStatus.HALL_OF_FAME) {
                 if (input.escape.clicked) {
                     gameStatus = GameStatus.MAINMENU;
                 }
@@ -185,7 +182,7 @@ public class Client extends Canvas implements Runnable {
                         gameStatus = GameStatus.GAMECYCLE;
                     }
                     if (menuCursor == 3) {
-                        gameStatus = GameStatus.HALLFAME;
+                        gameStatus = GameStatus.HALL_OF_FAME;
                     }
                     if (menuCursor == 4) {
                         break;
@@ -224,18 +221,18 @@ public class Client extends Canvas implements Runnable {
 
     private void start() {
           try {
-            halloffame[0] = new Score(100, "SINCLAIR");
-            halloffame[1] = new Score(90, "PETER");
-            halloffame[2] = new Score(80, "MARK");
-            halloffame[3] = new Score(70, "ANASTASIA");
-            halloffame[4] = new Score(60, "ALARA");
-            halloffame[5] = new Score(50, "DASHA");
-            halloffame[6] = new Score(40, "BENDER");
+            hallOfFame[0] = new Score(100, "SINCLAIR");
+            hallOfFame[1] = new Score(90, "PETER");
+            hallOfFame[2] = new Score(80, "MARK");
+            hallOfFame[3] = new Score(70, "ANASTASIA");
+            hallOfFame[4] = new Score(60, "ALARA");
+            hallOfFame[5] = new Score(50, "DASHA");
+            hallOfFame[6] = new Score(40, "BENDER");
 
             File file = new File("HallOfFame.txt");
             FileOutputStream f = new FileOutputStream(file);
             ObjectOutputStream o = new ObjectOutputStream(f);
-            o.writeObject(halloffame);
+            o.writeObject(hallOfFame);
             o.close();
             f.close();
 
@@ -257,64 +254,64 @@ public class Client extends Canvas implements Runnable {
         Graphics g = bs.getDrawGraphics();
 
         g.setColor(Colors.BLACK);
-        g.fillRect(0, 0, CLWidth, CLHeight);
-        Font font = new Font("TimesRoman", Font.PLAIN, SQUARE_SIZE * CLScale);
+        g.fillRect(0, 0, clientWidth, clientHeight);
+        Font font = new Font("TimesRoman", Font.PLAIN, SQUARE_SIZE * clientScale);
         g.setFont(font);
         switch (this.gameStatus) {
             case GAMECYCLE:
-                apple.render(g, CLScale);
-                mouse.render(g, CLScale);
-                snake.render(g, CLScale);
+                apple.render(g, clientScale);
+                mouse.render(g, clientScale);
+                snake.render(g, clientScale);
                 g.setColor(Colors.WHITE);
-                g.drawString("SCORE: " + snake.len, SQUARE_SIZE * CLScale * 15, SQUARE_SIZE * CLScale * 1);
+                g.drawString("SCORE: " + snake.len, SQUARE_SIZE * clientScale * 15, SQUARE_SIZE * clientScale);
 
                 break;
-            case HALLFAME:
+            case HALL_OF_FAME:
                 g.setColor(Colors.BLUE);
-                g.drawString("* HALL OF FAME *", SQUARE_SIZE * CLScale * 11, SQUARE_SIZE * CLScale * 3);
+                g.drawString("* HALL OF FAME *", SQUARE_SIZE * clientScale * 11, SQUARE_SIZE * clientScale);
                 g.setColor(Colors.GREEN);
-                g.drawString("1. SINCLAIR.....100", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 5);
-                g.drawString("2. PETER.........90", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 7);
-                g.drawString("3. MARK..........80", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 9);
+                g.drawString("1. SINCLAIR.....100", SQUARE_SIZE * clientScale * 9, SQUARE_SIZE * clientScale * 5);
+                g.drawString("2. PETER.........90", SQUARE_SIZE * clientScale * 9, SQUARE_SIZE * clientScale * 7);
+                g.drawString("3. MARK..........80", SQUARE_SIZE * clientScale * 9, SQUARE_SIZE * clientScale * 9);
                 g.setColor(Colors.YELLOW);
-                g.drawString("4. ANASTASIA.....70", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 11);
-                g.drawString("5. ALARA.........60", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 13);
-                g.drawString("6. DASHA.........50", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 15);
+                g.drawString("4. ANASTASIA.....70", SQUARE_SIZE * clientScale * 9, SQUARE_SIZE * clientScale * 11);
+                g.drawString("5. ALARA.........60", SQUARE_SIZE * clientScale * 9, SQUARE_SIZE * clientScale * 13);
+                g.drawString("6. DASHA.........50", SQUARE_SIZE * clientScale * 9, SQUARE_SIZE * clientScale * 15);
                 g.setColor(Colors.RED);
-                g.drawString("7. VERONIKA......40", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * 17);
+                g.drawString("7. VERONIKA......40", SQUARE_SIZE * clientScale * 9, SQUARE_SIZE * clientScale * 17);
                 break;
 
             case MAINMENU:
                 g.setColor(Colors.GREEN);
-                g.drawString("S N A K E", SQUARE_SIZE * CLScale * 11, SQUARE_SIZE * CLScale * 3);
+                g.drawString("S N A K E", SQUARE_SIZE * clientScale * 11, SQUARE_SIZE * clientScale * 3);
                 g.setColor(Colors.WHITE);
-                g.drawString("START GAME", SQUARE_SIZE * CLScale * 10, SQUARE_SIZE * CLScale * 6);
-                g.drawString("LOAD GAME", SQUARE_SIZE * CLScale * 10, SQUARE_SIZE * CLScale * 8);
-                g.drawString("OPTIONS", SQUARE_SIZE * CLScale * 10, SQUARE_SIZE * CLScale * 10);
-                g.drawString("HALL OF FAME", SQUARE_SIZE * CLScale * 10, SQUARE_SIZE * CLScale * 12);
-                g.drawString("EXIT", SQUARE_SIZE * CLScale * 10, SQUARE_SIZE * CLScale * 14);
+                g.drawString("START GAME", SQUARE_SIZE * clientScale * 10, SQUARE_SIZE * clientScale * 6);
+                g.drawString("LOAD GAME", SQUARE_SIZE * clientScale * 10, SQUARE_SIZE * clientScale * 8);
+                g.drawString("OPTIONS", SQUARE_SIZE * clientScale * 10, SQUARE_SIZE * clientScale * 10);
+                g.drawString("HALL OF FAME", SQUARE_SIZE * clientScale * 10, SQUARE_SIZE * clientScale * 12);
+                g.drawString("EXIT", SQUARE_SIZE * clientScale * 10, SQUARE_SIZE * clientScale * 14);
 
                 g.setColor(Colors.YELLOW);
-                g.drawString("*", SQUARE_SIZE * CLScale * 9, SQUARE_SIZE * CLScale * (menuCursor * 2 + 6));
-                g.drawString("*", SQUARE_SIZE * CLScale * 18, SQUARE_SIZE * CLScale * (menuCursor * 2 + 6));
+                g.drawString("*", SQUARE_SIZE * clientScale * 9, SQUARE_SIZE * clientScale * (menuCursor * 2 + 6));
+                g.drawString("*", SQUARE_SIZE * clientScale * 18, SQUARE_SIZE * clientScale * (menuCursor * 2 + 6));
                 break;
             case GAMEOVER:
                 g.setColor(Colors.WHITE);
-                g.drawString("GAME OVER", SQUARE_SIZE * CLScale * 10, SQUARE_SIZE * CLScale * 10);
-                g.drawString("TOTAL SCORE: " + snake.len, SQUARE_SIZE * CLScale * 10, SQUARE_SIZE * CLScale * 12);
+                g.drawString("GAME OVER", SQUARE_SIZE * clientScale * 10, SQUARE_SIZE * clientScale * 10);
+                g.drawString("TOTAL SCORE: " + snake.len, SQUARE_SIZE * clientScale * 10, SQUARE_SIZE * clientScale * 12);
                 break;
             case PAUSED:
-                apple.render(g, CLScale);
-                mouse.render(g, CLScale);
-                snake.render(g, CLScale);
+                apple.render(g, clientScale);
+                mouse.render(g, clientScale);
+                snake.render(g, clientScale);
                 g.setColor(Colors.WHITE);
-                g.drawString("SCORE: " + snake.len, SQUARE_SIZE * CLScale * 15, SQUARE_SIZE * CLScale * 1);
-                g.drawString("P A U S E D", SQUARE_SIZE * CLScale * 12, SQUARE_SIZE * CLScale * 10);
+                g.drawString("SCORE: " + snake.len, SQUARE_SIZE * clientScale * 15, SQUARE_SIZE * clientScale);
+                g.drawString("P A U S E D", SQUARE_SIZE * clientScale * 12, SQUARE_SIZE * clientScale * 10);
         }
 
         g.setColor(Colors.WHITE);
 
-        g.drawString("FPS " + FPS + " EPS " + EPS, SQUARE_SIZE * CLScale, SQUARE_SIZE * CLScale);
+        g.drawString("FPS " + FPS + " EPS " + EPS, SQUARE_SIZE * clientScale, SQUARE_SIZE * clientScale);
 
         bs.show();
         g.dispose();

@@ -23,9 +23,14 @@ package game;
 
 public class Key {
 
-    public int presses, absorbs;
-    public boolean down, clicked;
+    private int presses;
+    private int absorbs;
+    private boolean clicked;
+    private boolean down;
 
+    public boolean isClicked(){
+        return clicked;
+    }
     public void toggle(boolean pressed) {
         if (pressed != down) {
             down = pressed;

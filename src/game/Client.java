@@ -129,7 +129,7 @@ public class Client extends Canvas implements Runnable {
             lag += elapsed;
 
             processInput();
-            if (input.escape.clicked) {
+            if (input.escape.isClicked()) {
                 switch (gameStatus) {
                     case GAMECYCLE:
                         gameStatus = GameStatus.PAUSED;
@@ -143,26 +143,26 @@ public class Client extends Canvas implements Runnable {
                 }
             }
             if (gameStatus == GameStatus.HALL_OF_FAME) {
-                if (input.escape.clicked) {
+                if (input.escape.isClicked()) {
                     gameStatus = GameStatus.MAINMENU;
                 }
             }
             if (gameStatus == GameStatus.MAINMENU) {
-                if (input.down.clicked) {
+                if (input.down.isClicked()) {
                     menuCursor++;
                     if (menuCursor > 4) {
                         menuCursor = 4;
 
                     }
                 }
-                if (input.up.clicked) {
+                if (input.up.isClicked()) {
                     menuCursor--;
                     if (menuCursor < 0) {
                         menuCursor = 0;
 
                     }
                 }
-                if (input.enter.clicked) {
+                if (input.enter.isClicked()) {
                     if (menuCursor == 0) {
                         if (null != snake) {
                             snake = null;
@@ -190,7 +190,7 @@ public class Client extends Canvas implements Runnable {
                 }
             }
             if (gameStatus == GameStatus.GAMEOVER) {
-                if (input.enter.clicked) {
+                if (input.enter.isClicked()) {
                     gameStatus = GameStatus.MAINMENU;
                 }
             }

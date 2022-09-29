@@ -72,11 +72,11 @@ public class KeysInput implements KeyListener {
     }
 
     public void releaseAll() {
-        up.down = false;
-        down.down = false;
-        left.down = false;
-        right.down = false;
-        escape.down = false;
-        enter.down = false;
+        up.toggle(false);
+        down.toggle(false);
+        left.toggle(false);
+        right.toggle(false);
+        escape.toggle(false);
+        enter.toggle(false);
     }
 }

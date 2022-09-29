@@ -29,8 +29,7 @@ public class Apple extends Entity {
         squareSize = sSize;
         roomWidth = rWidth;
         roomHeight = rHeight;
-        x = rand.nextInt(roomWidth / squareSize) * squareSize;
-        y = rand.nextInt(roomHeight / squareSize - 1) * squareSize + squareSize;
+        generate();
     }
 
     public void generate() {

@@ -92,7 +92,7 @@ public class Snake {
         }
 
         if (move) {
-            if (input.up.down) {
+            if (input.up.press()) {
                 if (bodyY[HEAD] > squareSize) {
                     if (!checkBodyCollision(bodyX[HEAD], bodyY[HEAD] - squareSize)) {
                         moveBody();
@@ -101,7 +101,7 @@ public class Snake {
                 }
                 return;
             }
-            if (input.down.down) {
+            if (input.down.press()) {
                 if (bodyY[HEAD] < roomHeight - squareSize) {
                     if (!checkBodyCollision(bodyX[HEAD], bodyY[HEAD] + squareSize)) {
                         moveBody();
@@ -110,7 +110,7 @@ public class Snake {
                 }
                 return;
             }
-            if (input.left.down) {
+            if (input.left.press()) {
                 if (bodyX[HEAD] > 0) {
                     if (!checkBodyCollision(bodyX[HEAD] - squareSize, bodyY[HEAD])) {
                         moveBody();
@@ -119,7 +119,7 @@ public class Snake {
                 }
                 return;
             }
-            if (input.right.down) {
+            if (input.right.press()) {
                 if (bodyX[HEAD] < roomWidth - squareSize) {
                     if (!checkBodyCollision(bodyX[HEAD] + squareSize, bodyY[HEAD])) {
                         moveBody();
